@@ -44,7 +44,7 @@ def lcgg(seed):
         yield seed / m
 
 
-        
+
 #For implementation of the Gauss–Jordan elimination
 
 def gauss_jordan(matrix, vector, eps=1e-12):
@@ -133,3 +133,102 @@ def back_sub(U, y):
 
 
 
+# Code for Cholesky Decomposition
+
+def cholesky_decomposition(A):
+    n = len(A)
+    L = [[0.0] * n for _ in range(n)]
+    for i in range(n):
+        for j in range(i + 1):
+            s = sum(L[i][k] * L[j][k] for k in range(j))
+            if i == j:  # diagonal
+                val = A[i][i] - s
+                if val <= 0:
+                    raise ValueError("Matrix is not positive definite")
+                L[i][j] = val ** 0.5
+            else:  # off-diagonal
+                L[i][j] = (A[i][j] - s) / L[j][j]
+    return L
+
+
+def forward_substitution(L, b):
+    n = len(L)
+    y = [0.0] * n
+    for i in range(n):
+        s = sum(L[i][j] * y[j] for j in range(i))
+        y[i] = (b[i] - s) / L[i][i]
+    return y
+
+
+def backward_substitution(U, y):
+    n = len(U)
+    x = [0.0] * n
+    for i in range(n - 1, -1, -1):
+        s = sum(U[i][j] * x[j] for j in range(i + 1, n))
+        x[i] = (y[i] - s) / U[i][i]
+    return x
+
+
+
+#Function for Gauss-Seidel Iteration
+
+def gauss_seidel(A, b, tol=1e-6, max_iter=10000):
+    n = len(A)
+    x = [0.0] * n
+    for k in range(max_iter):
+        x_new = x[:]
+        for i in range(n):
+            s1 = sum(A[i][j] * x_new[j] for j in range(i))
+            s2 = sum(A[i][j] * x[j] for j in range(i + 1, n))
+            x_new[i] = (b[i] - s1 - s2) / A[i][i]
+        # check convergence
+        if max(abs(x_new[i] - x[i]) for i in range(n)) < tol:
+            return x_new, k + 1
+        x = x_new
+    return x, max_iter
+
+
+#Function for Gauss-Seidel Iteration
+
+def jacobi_iteration(A, b, tol=1e-6, max_iter=1000):
+    n = len(b)
+    x = [0.0] * n   # initial guess
+    x_new = [0.0] * n
+
+    for it in range(max_iter):
+        # Compute next iteration values
+        for i in range(n):
+            total = 0.0
+            for j in range(n):
+                if j != i:
+                    total += A[i][j] * x[j]
+            x_new[i] = (b[i] - total) / A[i][i]
+
+        # Check for convergence
+        max_diff = 0.0
+        for i in range(n):
+            if abs(x_new[i] - x[i]) > max_diff:
+                max_diff = abs(x_new[i] - x[i])
+
+        if max_diff < tol:
+            return x_new, it + 1
+
+        # Update for next iteration
+        for i in range(n):
+            x[i] = x_new[i]
+
+    return x, max_iter
+
+#Function for making diagonally dominant
+
+def make_diagonally_dominant(A, b):
+    n = len(A)
+    for i in range(n):
+        for j in range(i, n):
+            row_sum = sum(abs(A[j][k]) for k in range(n) if k != i)
+            if abs(A[j][i]) >= row_sum:
+                # Swap rows in both A and b
+                A[i], A[j] = A[j], A[i]
+                b[i], b[j] = b[j], b[i]
+                break
+    return A, b
