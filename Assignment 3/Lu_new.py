@@ -1,9 +1,19 @@
 # Shivam Kumar 2311166
 
-# LU decomposition by using Doolittle method
+from all_lib import lu_decomp, forward_sub, back_sub,read_labeled_matrices
 
-from A_LU import A
-from all_lib import lu_decomp
+
+# FUNCTION FOR CALLING THE TEXT FILE IS IN THE LIBRARY
+# Loading matrices from text file
+matrices = read_labeled_matrices("LU_matrix.txt")
+print("Loaded matrices:", list(matrices.keys()))
+
+# Extract matrices
+A = matrices["A"]
+Matrix = matrices["Matrix"]
+b = matrices["b"][0]  # b is a single row
+
+# LU decomposition by using Doolittle method
 
 L, U = lu_decomp(A)
 
@@ -11,40 +21,39 @@ L, U = lu_decomp(A)
 n = len(A)
 A_creates = [[sum(L[i][k] * U[k][j] for k in range(n)) for j in range(n)] for i in range(n)]
 
-print("L matrix:")
+print("\nL matrix:")
 for row in L:
     print(row)
-print("U matrix:")
+
+print("\nU matrix:")
 for row in U:
     print(row)
-print("Reconstructed A (L*U):")
+
+print("\nReconstructed A (L*U):")
 for row in A_creates:
     print(row)
 
-
-
-"""L matrix:
+"""
+L matrix:
 [1.0, 0.0, 0.0]
 [3.0, 1.0, 0.0]
 [2.0, 1.0, 1.0]
+
 U matrix:
-[1, 2, 4]
+[1.0, 2.0, 4.0]
 [0.0, 2.0, 2.0]
 [0.0, 0.0, 3.0]
+
 Reconstructed A (L*U):
 [1.0, 2.0, 4.0]
 [3.0, 8.0, 14.0]
-[2.0, 6.0, 13.0]"""
+[2.0, 6.0, 13.0]
+"""
 
 print('STARTING OF 2ND ANSWER---->')
 
 ######## Q.2 Programm
 # Solve linear system with LU decomposition (Doolittle)
-
-from A_LU import b,Matrix
-from all_lib import lu_decomp
-from all_lib import forward_sub,back_sub
-
 
 L, U = lu_decomp(Matrix)
 y = forward_sub(L, b)
@@ -53,18 +62,21 @@ x = back_sub(U, y)
 n = len(Matrix)
 A_crea = [[sum(L[i][k] * U[k][j] for k in range(n)) for j in range(n)] for i in range(n)]
 
-print("Reconstructed A (L*U):")
+print("\nReconstructed Matrix (L*U):")
 for row in A_crea:
     print(row)
 
-print("Solution (a1 to a6):", x)
+print("\nSolution (a1 to a6):", x)
 
+"""
+Reconstructed Matrix (L*U):
+[1.0, -1.0, 4.0, 0.0, 2.0, 9.0]
+[0.0, 5.0, -2.0, 7.0, 8.0, 4.0]
+[1.0, 0.0, 5.0, 7.0, 3.0, -2.000000000000001]
+[6.0, -1.0, 2.0, 3.0, 0.0, 8.0]
+[-4.0, 2.0, -6.661338147750939e-16, 5.0000000000000036, -5.0, 3.0000000000000013]
+[0.0, 7.0, -1.0000000000000002, 5.000000000000001, 4.000000000000001, -2.0000000000000018]
 
-"""Matrix A:
-[1, -1, 4, 0, 2, 9]
-[0, 5, -2, 7, 8, 4]
-[1, 0, 5, 7, 3, -2]
-[6, -1, 2, 3, 0, 8]
-[-4, 2, 0, 5, -5, 3]
-[0, 7, -1, 5, 4, -2]
-Solution (a1 to a6): [-1.7618170439978584, 0.8962280338740118, 4.051931404116156, -1.6171308025395417, 2.041913538501913, 0.15183248715593536]"""
+Solution (a1 to a6): [-1.7618170439978584, 0.8962280338740118, 4.051931404116156, -1.6171308025395417, 2.041913538501913, 0.15183248715593536]
+"""
+
