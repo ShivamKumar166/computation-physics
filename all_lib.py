@@ -188,7 +188,7 @@ def gauss_seidel(A, b, tol=1e-6, max_iter=10000):
     return x, max_iter
 
 
-#Function for Gauss-Seidel Iteration
+#Function for jacobi Iteration
 
 def jacobi_iteration(A, b, tol=1e-6, max_iter=1000):
     n = len(b)
@@ -262,3 +262,4 @@ def read_labeled_matrices(filename):
         matrices[current_label] = current_matrix
 
     return matrices
+
