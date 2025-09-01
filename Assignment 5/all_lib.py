@@ -232,3 +232,35 @@ def make_diagonally_dominant(A, b):
                 b[i], b[j] = b[j], b[i]
                 break
     return A, b
+
+
+#To read text file
+
+def read_labeled_matrices(filename):
+    matrices = {}
+    current_label = None
+    current_matrix = []
+
+    with open(filename, 'r') as f:
+        for line in f:
+            line = line.strip()
+
+            if not line:  # blank line = separator
+                if current_label and current_matrix:
+                    matrices[current_label] = current_matrix
+                    current_label = None
+                    current_matrix = []
+
+            elif line.endswith(":"):  # label line
+                current_label = line[:-1]  # remove ":"
+
+            else:
+                row = [float(num) for num in line.split()]
+                current_matrix.append(row)
+
+    # Add last matrix
+    if current_label and current_matrix:
+        matrices[current_label] = current_matrix
+
+    return matrices
+
