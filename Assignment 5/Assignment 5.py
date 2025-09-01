@@ -1,7 +1,20 @@
 '''Shivam Kumar 2311166'''
 
-from Assignment_5_A_and_b import A, b, P, q
-from all_lib import cholesky_decomposition, forward_substitution, backward_substitution, gauss_seidel
+ #1st question
+from all_lib import cholesky_decomposition, forward_substitution, backward_substitution, gauss_seidel,read_labeled_matrices
+
+#  Loading matrices from text file
+matrices = read_labeled_matrices("Assignment_5_A_and_b.txt")
+print("Loaded matrices:", list(matrices.keys()))
+
+# Extract matrices
+A = matrices["A"]
+
+P = matrices["P"]
+q = matrices["q"][0]
+b = matrices["b"][0]  # b and q are single rows
+
+
 
 
 # Function to check whether a matrix is symmetric (needed for Cholesky decomposition)
@@ -57,7 +70,7 @@ Gauss-Seidel solution: [0.9999997530614102, 0.9999997892247294, 0.99999991004602
 Converged in 16 iterations'''
 
 
-#  Second Question
+print("\nSecond Question:\n")
 
 from all_lib import jacobi_iteration, make_diagonally_dominant
 
