@@ -263,3 +263,86 @@ def read_labeled_matrices(filename):
 
     return matrices
 
+
+# Root Finding
+
+import math
+
+
+# Functions for Question 1
+
+def f1(x):
+
+    return math.log(x/2) - math.sin(5*x/2)
+
+# Bisection method
+def bisection(a, b, tol=1e-6):
+# Checking if root is bracketed
+    if f1(a) * f1(b) > 0:
+        raise ValueError("No root in this interval for Bisection")
+# Repeat until interval is smaller than tolerance
+
+    while (b - a) / 2 > tol:
+        c = (a + b) / 2   
+        if f1(c) == 0:    # exact root
+            return c
+        elif f1(a) * f1(c) < 0:  # checking if root lies in [a, c]
+            b = c
+        else:                     # checking if root lies in [c, b]
+            a = c
+    return (a + b) / 2            # returns approximate root
+
+# Regula Falsi method
+def regula_falsi(a, b, tol=1e-6):
+# Checking if root is bracketed
+    if f1(a) * f1(b) > 0:
+        raise ValueError("No root in this interval for Regula Falsi")
+    c = a
+    while True:
+        c_old = c
+# Formula for false position
+        c = (a*f1(b) - b*f1(a)) / (f1(b) - f1(a))
+        if abs(c - c_old) < tol:   # stop if root doesn't change much
+            return c
+        if f1(c) == 0:             
+            return c
+        elif f1(a) * f1(c) < 0:    # checking if root lies in [a, c]
+            b = c
+        else:                      # checking if root lies in [c, b]
+            a = c
+
+
+
+# Functions for Question 2
+
+def g(x):
+
+    return -x - math.cos(x)
+
+def bracket_interval(a, b, beta=0.1, max_iter=20):
+
+
+    fa, fb = g(a), g(b)
+
+    for i in range(max_iter):
+        if fa * fb < 0:  
+            print(f"Bracket found: [{a:.6f}, {b:.6f}] with g(a)={fa:.6f}, g(b)={fb:.6f}")
+            return a, b
+
+        # Shift whichever side has smaller magnitude
+        if abs(fa) < abs(fb):
+            a = a - beta * (b - a)  # expand towards left
+            fa = g(a)
+        else:
+            b = b + beta * (b - a)  # expand towards right
+            fb = g(b)
+
+        # Shows iteration progress
+        print(f"Iter {i+1}: a={a:.6f}, b={b:.6f}, g(a)={fa:.6f}, g(b)={fb:.6f}")
+
+    # If not bracketed after max iterations
+    print("No bracket found within max iterations")
+    return None, None
+
+
+
