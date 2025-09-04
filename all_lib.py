@@ -269,80 +269,124 @@ def read_labeled_matrices(filename):
 import math
 
 
-# Functions for Question 1
-
-def f1(x):
-
-    return math.log(x/2) - math.sin(5*x/2)
-
 # Bisection method
-def bisection(a, b, tol=1e-6):
+
+def bisection(f1,a, b, tol=1e-6):
 # Checking if root is bracketed
     if f1(a) * f1(b) > 0:
         raise ValueError("No root in this interval for Bisection")
 # Repeat until interval is smaller than tolerance
-
+    iterations = 0
     while (b - a) / 2 > tol:
-        c = (a + b) / 2   
-        if f1(c) == 0:    # exact root
-            return c
-        elif f1(a) * f1(c) < 0:  # checking if root lies in [a, c]
+        iterations += 1
+        # midpoint
+        c = (a + b) / 2
+        # exact root
+        if f1(c) == 0:
+            return c, iterations
+        # checking root lies in [a, c]
+        elif f1(a) * f1(c) < 0:
             b = c
-        else:                     # checking if root lies in [c, b]
+            # checking root lies in [c, b]
+        else:
             a = c
-    return (a + b) / 2            # returns approximate root
+    return (a + b) / 2, iterations
 
 # Regula Falsi method
-def regula_falsi(a, b, tol=1e-6):
-# Checking if root is bracketed
+
+
+def regula_falsi(f1,a, b, tol=1e-6):
+    # Checking if root is bracketed
     if f1(a) * f1(b) > 0:
         raise ValueError("No root in this interval for Regula Falsi")
+
     c = a
+    iterations = 0
     while True:
+        iterations += 1
         c_old = c
-# Formula for false position
-        c = (a*f1(b) - b*f1(a)) / (f1(b) - f1(a))
-        if abs(c - c_old) < tol:   # stop if root doesn't change much
-            return c
-        if f1(c) == 0:             
-            return c
-        elif f1(a) * f1(c) < 0:    # checking if root lies in [a, c]
+        # Formula for false position
+        c = (a * f1(b) - b * f1(a)) / (f1(b) - f1(a))
+        # stop if root doesn't change much
+        if abs(c - c_old) < tol:
+            return c, iterations
+        if f1(c) == 0:
+            return c, iterations
+        elif f1(a) * f1(c) < 0:
             b = c
-        else:                      # checking if root lies in [c, b]
+        else:
             a = c
 
 
 
-# Functions for Question 2
+# Functions for Question 2 FINDING BRACKET INTERVAL
 
 def g(x):
 
     return -x - math.cos(x)
 
-def bracket_interval(a, b, beta=0.1, max_iter=20):
+def bracket_interval(g,a, b, beta=0.1, max_iter=20):
 
 
     fa, fb = g(a), g(b)
 
     for i in range(max_iter):
-        if fa * fb < 0:  
+        if fa * fb < 0:  # root is bracketed
             print(f"Bracket found: [{a:.6f}, {b:.6f}] with g(a)={fa:.6f}, g(b)={fb:.6f}")
             return a, b
 
         # Shift whichever side has smaller magnitude
         if abs(fa) < abs(fb):
-            a = a - beta * (b - a)  # expand towards left
+            a = a - beta * (b - a)
             fa = g(a)
         else:
-            b = b + beta * (b - a)  # expand towards right
+            b = b + beta * (b - a)
             fb = g(b)
 
-        # Shows iteration progress
+
+        # Show iteration progress
         print(f"Iter {i+1}: a={a:.6f}, b={b:.6f}, g(a)={fa:.6f}, g(b)={fb:.6f}")
 
     # If not bracketed after max iterations
     print("No bracket found within max iterations")
     return None, None
 
+#CODE FOR Newton Raphson
+def newton_raphson(f, df, x0, tol=1e-6, max_iter=100):
+    # Initial guess
+    x = x0
+    for i in range(max_iter):
+        # Function value at x
+        fx = f(x)
+        # Derivative value at x
+        dfx = df(x)
+
+        # If function value is close enough to 0, root found
+        if abs(fx) < tol:
+            return x, i + 1
+
+        # To avoid division by zero if derivative = 0
+        if dfx == 0:
+            break
+
+        # Updating x using Newton–Raphson formula
+        x = x - fx / dfx
+
+    return None, max_iter
+
+#CODE for fxed pont method
+def fixed_point(g, x0, tol=1e-6, max_iter=100):
+    # Initial guess
+    x = x0
+    for i in range(max_iter):
+ # Computng next approximation using iteration function g(x)
+        x_new = g(x)
 
 
+        if abs(x_new - x) < tol:
+            return x_new, i + 1
+
+        x = x_new
+
+    # If no convergence within max_iter, return None
+    return None, max_iter
