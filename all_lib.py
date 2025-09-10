@@ -47,16 +47,15 @@ def lcgg(seed):
 
 #For implementation of the Gauss–Jordan elimination
 
+
+
 def gauss_jordan(matrix, vector, eps=1e-12):
     n = len(matrix)
-
     mat = [[float(x) for x in row] for row in matrix]
 
-    # Augmenting with B
+    # Augment with RHS vector
     for i in range(n):
         mat[i].append(float(vector[i]))
-
-    print_mat(mat, "Initial Augmented Matrix [A|b]")
 
     # Elimination
     for i in range(n):
@@ -67,15 +66,13 @@ def gauss_jordan(matrix, vector, eps=1e-12):
 
         if max_row != i:
             mat[i], mat[max_row] = mat[max_row], mat[i]
-            print(f"\nSwapped row {i} with row {max_row}")
-            print_mat(mat, f"After swapping for column {i}")
 
-        # normalize pivot row
+        # Normalize pivot row
         pivot = mat[i][i]
         for j in range(i, n+1):
             mat[i][j] /= pivot
 
-        # eliminate other rows
+        # Eliminate other rows
         for k in range(n):
             if k == i:
                 continue
@@ -83,9 +80,8 @@ def gauss_jordan(matrix, vector, eps=1e-12):
             for j in range(i, n+1):
                 mat[k][j] -= factor * mat[i][j]
 
-        print_mat(mat, f"After elimination step {i}")
-
     return mat
+
 
 #for solving gauss jordan eqn.
 
@@ -93,6 +89,24 @@ def solve_equations(A_matrix, B_vector):
     reduced = gauss_jordan(A_matrix, B_vector)
     n = len(A_matrix)
     return [reduced[i][-1] for i in range(n)]
+
+# Inverse Matrix via Gauss-Jordan
+def inverse_matrix(A):
+    n = len(A)
+    inverse = []
+    I = [[1 if i == j else 0 for j in range(n)] for i in range(n)]
+
+    for col in range(n):
+        e = [I[row][col] for row in range(n)]
+        x = solve_equations([row[:] for row in A], e)
+        inverse.append(x)
+
+    # Transpose to get proper inverse
+    return [[inverse[j][i] for j in range(n)] for i in range(n)]
+
+
+
+
 
 # LU decomposition by using Doolittle method
 
@@ -188,7 +202,7 @@ def gauss_seidel(A, b, tol=1e-6, max_iter=10000):
     return x, max_iter
 
 
-#Function for jacobi Iteration
+#Function for jacobi_iteration
 
 def jacobi_iteration(A, b, tol=1e-6, max_iter=1000):
     n = len(b)
@@ -233,6 +247,7 @@ def make_diagonally_dominant(A, b):
                 break
     return A, b
 
+
 #To read text file
 
 def read_labeled_matrices(filename):
@@ -261,8 +276,8 @@ def read_labeled_matrices(filename):
     if current_label and current_matrix:
         matrices[current_label] = current_matrix
 
-    return matrices
 
+    return matrices
 
 # Root Finding
 
@@ -390,3 +405,110 @@ def fixed_point(g, x0, tol=1e-6, max_iter=100):
 
     # If no convergence within max_iter, return None
     return None, max_iter
+
+
+
+
+
+
+#  Fixed Point Method
+def fixed_point_method(x0, tol=1e-6, max_iter=100):
+    # starting guess values
+    x1, x2, x3 = x0
+
+    for i in range(max_iter):
+        try:
+            # finding new x1 from 1st eqn
+            x1_new = math.sqrt(37 - x2)
+        except ValueError:
+            print(f"bad math for x1 in iter {i}")
+
+            return None
+
+        if x1_new <= 5:
+            print(f"x1_new <= 5, cant do sqrt for x2 in iter {i}")
+            return None
+
+        try:
+
+         # finding new x2 from 2nd eqn
+            x2_new = math.sqrt(x1_new - 5)
+        except ValueError:
+
+            print(f"bad math for x2 in iter {i}")
+            return None
+
+        # finding x3 from 3rd eqn
+        x3_new = 3 - x1_new - x2_new
+
+        # checking for convergence
+        diff = max(abs(x1_new - x1), abs(x2_new - x2), abs(x3_new - x3))
+
+# updating the values
+        x1, x2, x3 = x1_new, x2_new, x3_new
+
+        print(f"FixedPoint iter {i + 1}: x1={x1:.6f}, x2={x2:.6f}, x3={x3:.6f}, diff={diff:.2e}")
+
+        if diff < tol:
+            return [x1, x2, x3]
+
+    print("Fixed Point not converge in max iters")
+    return [x1, x2, x3]
+
+
+
+
+
+#  Newton Raphson Method
+
+def newton_raphson_method(x0, tol=1e-6, max_iter=100):
+
+
+    def f(x):
+        x1, x2, x3 = x
+        return [
+            x1 ** 2 + x2 - 37,  # eqn1
+            x1 - x2 ** 2 - 5,  # eqn2
+            x1 + x2 + x3 - 3  # eqn3
+        ]
+
+    # DEfining the jacobian matrix
+    def jacobian(x):
+        x1, x2, x3 = x
+        return [
+            [2 * x1, 1, 0],
+            [1, -2 * x2, 0],
+            [1, 1, 1]
+        ]
+
+
+    x = list(x0)
+
+    for i in range(max_iter):
+        f_val = f(x)
+        J = jacobian(x)
+
+        try:
+         # inverse of jacobian
+            J_inv = inverse_matrix(J)
+        except Exception as e:
+            print(f"Jacobian inv fail at iter {i + 1}: {e}")
+            return None
+
+
+        delta = [sum(J_inv[r][c] * (-f_val[c]) for c in range(len(J))) for r in range(len(J))]
+
+        # update x
+        x_new = [x[j] + delta[j] for j in range(3)]
+
+        # checking max differnce
+        diff = max(abs(x_new[j] - x[j]) for j in range(3))
+        x = x_new
+
+        print(f"NewtonRaphson iter {i + 1}: x1={x[0]:.6f}, x2={x[1]:.6f}, x3={x[2]:.6f}, diff={diff:.2e}")
+
+        if diff < tol:
+            return x
+
+    print("Newton Raphson not converge in max iters")
+    return x
