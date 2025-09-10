@@ -6,13 +6,15 @@ import math
 
 
 
+#Gauss Jordan method is used
 
 initial_guess = [1, 3, 2.1]
-
+#Solving by Fixed Point Method
 print("Fixed Point Method Solution:")
 fp_solution = fixed_point_method(initial_guess)
 print("Solution:", fp_solution)
 
+#Solving by Newton-Raphson Method 
 print("\nNewton-Raphson Method Solution:")
 nr_solution = newton_raphson_method(initial_guess)
 print("Solution:", nr_solution)
@@ -41,4 +43,5 @@ NewtonRaphson iter 7: x1=6.000000, x2=1.000000, x3=-4.000000, diff=1.15e-05
 NewtonRaphson iter 8: x1=6.000000, x2=1.000000, x3=-4.000000, diff=6.36e-11
 Solution: [6.0, 1.0000000000000002, -4.0]
 """
+
 
