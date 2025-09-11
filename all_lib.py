@@ -512,3 +512,75 @@ def newton_raphson_method(x0, tol=1e-6, max_iter=100):
 
     print("Newton Raphson not converge in max iters")
     return x
+
+
+#Laguerre method
+
+# This fun. give us value of poly. and its 1st and 2nd derivative at x
+def poly_and_derivs(coeffs, x):
+    n = len(coeffs) - 1
+    # p is poly value, dp is first deriv, ddp is second deriv
+    p = coeffs[0]
+    dp = 0
+    ddp = 0
+    for i in range(1, n+1):
+        ddp = ddp * x + 2 * dp
+        dp = dp * x + p
+        p = p * x + coeffs[i]
+    return p, dp, ddp
+
+
+# Laguerre method to find one root of poly
+
+def laguerre(coeffs, x0, tol=1e-12, max_iter=100):
+    n = len(coeffs) - 1
+ # we take starting guess
+    x = x0
+    for _ in range(max_iter):
+        p, dp, ddp = poly_and_derivs(coeffs, x)
+     # if value is very small then root found
+        if abs(p) < tol:
+            return x
+        G = dp / p
+        H = G*G - ddp / p
+    # we have 2 possible denom. So we pick the larger one
+        denom1 = G + math.sqrt((n-1)*(n*H - G*G))
+        denom2 = G - math.sqrt((n-1)*(n*H - G*G))
+        if abs(denom1) > abs(denom2):
+            a = n / denom1
+        else:
+            a = n / denom2
+        x_new = x - a
+
+        if abs(x_new - x) < tol:
+            return x_new
+        x = x_new
+    # return last value if no converge
+    return x
+
+
+# this function is deflation using synthetic division to reduce degree of polynomial
+
+def deflate(coeffs, root):
+    n = len(coeffs) - 1
+    new_coeffs = [coeffs[0]]
+    for i in range(1, n):
+        new_coeffs.append(coeffs[i] + root*new_coeffs[-1])
+    return new_coeffs
+
+# this fun finds all roots of a poly one by one
+
+def all_roots(coeffs):
+  #we make copy so original not change
+    coeffs = coeffs[:]
+    roots = []
+    while len(coeffs) > 2:
+        # starting guess 1.5
+        root = laguerre(coeffs, 1.6)
+        roots.append(round(root, 6))
+        coeffs = deflate(coeffs, root)
+# final left linear eqn. ax+b = 0
+    if len(coeffs) == 2:
+        roots.append(round(-coeffs[1]/coeffs[0], 6))
+    return roots
+
