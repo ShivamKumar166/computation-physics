@@ -584,3 +584,26 @@ def all_roots(coeffs):
         roots.append(round(-coeffs[1]/coeffs[0], 6))
     return roots
 
+
+# Midpoint rule
+
+def midpoint(f, a, b, N):
+    h = (b - a) / N
+    total = 0.0
+    for n in range(1, N + 1):
+# mid point of sub interval
+        x_mid = a + (n - 0.5) * h
+        total += f(x_mid)
+    return h * total
+
+
+# Trapezoidal rule
+
+def trapezoidal(f, a, b, N):
+    h = (b - a) / N
+    total = 0.0
+    for n in range(1, N + 1):
+        x_prev = a + (n - 1) * h
+        x_curr = a + n * h
+        total += (f(x_prev) + f(x_curr))
+    return (h / 2) * total
