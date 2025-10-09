@@ -607,3 +607,25 @@ def trapezoidal(f, a, b, N):
         x_curr = a + n * h
         total += (f(x_prev) + f(x_curr))
     return (h / 2) * total
+
+# SIMPSON’S 1/3 RULE
+def simpson(f,a,b,N):
+    if N % 2 == 1:    # Simpson’s rule needs even N
+        N += 1
+    h = (b - a) / N
+    s = f(a) + f(b)
+    # Apply Simpson’s coefficients
+    for i in range(1, N):
+        coef = 4 if i % 2 == 1 else 2
+        s += coef * f(a + i * h)
+    return s * h / 3
+
+#MONTE CARLO INTEGRATION FUNCTION
+def monte_sin2(N, seed=55):
+    rands = lcg(seed, N)
+    s = 0
+    for r in rands:
+        # Map r in [0,1) → x in [-1,1]
+        x = -1 + 2 * r
+        s += math.sin(x)**2
+    return 2 * s / N   # multiply by (b-a) = 2
