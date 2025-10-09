@@ -1,6 +1,3 @@
-''''Shivam Kumar 2311166'''
-
-
 #ASSIGNMENT 10 : MIDPOINT, SIMPSON’S 1/3 & MONTE CARLO METHODS
 from all_lib import midpoint, lcg,simpson,monte_sin2
 import math
@@ -62,8 +59,18 @@ print(f" Simpson  N={N1s:4d}: {I1_sim:.8f}  |err|={e1s:.2e}  Rel={r1s:.2e}")
 print(f"\nIntegral (x*cosx) from 0 to pi/2")
 print(f" Midpoint N={N2m:4d}: {I2_mid:.8f}  |err|={e2m:.2e}  Rel={r2m:.2e}")
 print(f" Simpson  N={N2s:4d}: {I2_sim:.8f}  |err|={e2s:.2e}  Rel={r2s:.2e}")
+'''
+Answer 1
 
+=== MIDPOINT & SIMPSON RESULTS ===
+Integral (1/x) from 1 to 2
+ Midpoint N= 289: 0.69314681  |err|=3.74e-07  Rel=5.40e-07
+ Simpson  N=  20: 0.69314737  |err|=1.94e-07  Rel=2.80e-07
 
+Integral (x*cosx) from 0 to pi/2
+ Midpoint N= 610: 0.57079704  |err|=7.10e-07  Rel=1.24e-06
+ Simpson  N=  22: 0.57079699  |err|=6.61e-07  Rel=1.16e-06
+'''
 # MONTE CARLO INTEGRATION
 
 # ∫ sin²(x) dx from -1 to 1 using own LCG (pseudo-random generator)
@@ -100,3 +107,18 @@ plt.title("Convergence of Monte Carlo integration for ∫sin²x dx (-1→1)")
 plt.legend()
 plt.grid(True)
 plt.show()
+'''
+Answer 2
+
+=== MONTE CARLO sin^2(x) ===
+N=1000      I=0.511  |err|=3.477e-02
+N=1500      I=0.516  |err|=2.924e-02
+N=4000      I=0.536  |err|=9.087e-03
+N=5000      I=0.536  |err|=9.018e-03
+N=7000      I=0.538  |err|=7.664e-03
+N=10000     I=0.539  |err|=6.296e-03
+N=14000     I=0.538  |err|=7.589e-03
+N=15000     I=0.538  |err|=7.401e-03
+N=20000     I=0.541  |err|=4.087e-03
+N=25000     I=0.542  |err|=2.953e-03
+'''
