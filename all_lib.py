@@ -629,3 +629,26 @@ def monte_sin2(N, seed=55):
         x = -1 + 2 * r
         s += math.sin(x)**2
     return 2 * s / N   # multiply by (b-a) = 2
+
+
+
+#Gaussian Quadrature method
+
+def gauss_quad_integration(func, start, end, nodes, coeffs):
+    # Calculate midpoint and half of the interval length
+    midpoint = (start + end) / 2
+    half_range = (end - start) / 2
+
+    # Initialize total sum
+    integral_sum = 0.0
+
+    # Loop over all roots (Legendre nodes)
+    for i in range(len(nodes)):
+        # Transform node from [-1,1] interval to [start,end]
+        x_value = midpoint + half_range * nodes[i]
+
+        # Accumulate weighted function values
+        integral_sum += coeffs[i] * func(x_value)
+
+    # Multiply by the scaling factor to get the final integral value
+    return integral_sum * half_range
