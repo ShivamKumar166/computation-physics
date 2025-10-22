@@ -652,3 +652,43 @@ def gauss_quad_integration(func, start, end, nodes, coeffs):
 
     # Multiply by the scaling factor to get the final integral value
     return integral_sum * half_range
+
+
+import numpy as np
+
+# Forward Euler method
+def forward_euler(func, y0, x_start, x_end, h):
+    # finds how many points are there in the given range
+    n_steps = int((x_end - x_start) / h) + 1
+
+    # make x and y arrays
+    x_vals = np.linspace(x_start, x_end, n_steps)
+    y_vals = np.zeros(n_steps)
+    y_vals[0] = y0  # starting value (given)
+
+    # loop to get all next y values
+    for i in range(n_steps - 1):
+        # apply Euler formula: y(i+1) = y(i) + h*f(x(i), y(i))
+        y_vals[i + 1] = y_vals[i] + h * func(x_vals[i], y_vals[i])
+        # basically taking small step using slope
+
+    # return the arrays to plot or print later
+    return x_vals, y_vals
+
+
+# Predictor–Corrector (2 step method)
+
+def predictor_corrector(func, y0, x_start, x_end, h):
+    n_steps = int((x_end - x_start) / h) + 1
+    x_vals = np.linspace(x_start, x_end, n_steps)
+    y_vals = np.zeros(n_steps)
+    y_vals[0] = y0
+
+    # loop for all intervals
+    for i in range(n_steps - 1):
+        # predictor using euler
+        y_pred = y_vals[i] + h * func(x_vals[i], y_vals[i])
+        # corrector – average slope kind of thing
+        y_vals[i + 1] = y_vals[i] + (h / 2) * (func(x_vals[i], y_vals[i]) + func(x_vals[i + 1], y_pred))
+
+    return x_vals, y_vals
