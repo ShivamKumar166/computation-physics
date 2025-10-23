@@ -692,3 +692,44 @@ def predictor_corrector(func, y0, x_start, x_end, h):
         y_vals[i + 1] = y_vals[i] + (h / 2) * (func(x_vals[i], y_vals[i]) + func(x_vals[i + 1], y_pred))
 
     return x_vals, y_vals
+
+
+
+# Runge-Kutta 4th order method implementation FOR 1ST Order Dfferental eqn
+def rk4(f, x0, y0, h, x_end):
+    n = int((x_end - x0) / h)          # number of steps
+    x_vals = [x0]                      # list to store x values
+    y_vals = [y0]                      # list to store y values
+
+    for i in range(n):
+        # current values
+        x, y = x_vals[-1], y_vals[-1]
+# RK4 intermediate slopes
+        k1 = f(x, y)
+        k2 = f(x + h/2, y + k1*h/2)
+        k3 = f(x + h/2, y + k2*h/2)
+        k4 = f(x + h, y + k3*h)
+    # combine slopes to find next y
+        y_new = y + (h/6)*(k1 + 2*k2 + 2*k3 + k4)
+        # update x and y lists
+        x_vals.append(x + h)
+        y_vals.append(y_new)
+    return np.array(x_vals), np.array(y_vals)
+
+
+# RK4 method for a system of two equations
+def rk4_system(f, t0, state0, h, t_end):
+    t_vals = [t0]          # list to store time values
+    states = [state0]      # list to store [x, v] at each step
+    while t_vals[-1] < t_end:
+        t, s = t_vals[-1], states[-1]
+        # four slopes as per RK4 formula
+        k1 = f(t, s)
+        k2 = f(t + h/2, s + h*k1/2)
+        k3 = f(t + h/2, s + h*k2/2)
+        k4 = f(t + h, s + h*k3)
+        # combine to get next state
+        s_new = s + (h/6)*(k1 + 2*k2 + 2*k3 + k4)
+        t_vals.append(t + h)
+        states.append(s_new)
+    return np.array(t_vals), np.array(states)
