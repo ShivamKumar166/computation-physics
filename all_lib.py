@@ -733,3 +733,110 @@ def rk4_system(f, t0, state0, h, t_end):
         t_vals.append(t + h)
         states.append(s_new)
     return np.array(t_vals), np.array(states)
+
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Parameters
+L = 2.0                # Length of rod
+T_center = 300.0       # Initial temperature at center
+Nx = 40                # Number of spatial grid points (can increase for better resolution)
+dx = L / (Nx - 1)      # Spatial step
+dt = 0.0005            # Time step chosen so dt/(dx^2) << 0.5
+Nt = 2000              # Number of time steps (adjust as needed for desired simulation time)
+s = dt / dx**2
+
+# Print stability parameter for verification
+print("Stability parameter s =", s)
+assert s < 0.5
+
+# Prepare grid
+x = np.linspace(0, L, Nx)
+
+# Initial condition: all 0C except at the center
+u = np.zeros(Nx)
+center_index = np.argmin(np.abs(x - L/2))
+u[center_index] = T_center
+
+# Prepare to record selected snapshots
+snapshots = [u.copy()]
+snapshot_times = [0, 10, 20, 50, 100, 200, 500, 1000, 1500, 1999]  # time steps to plot
+
+# FTCS time-stepping
+for n in range(1, Nt+1):
+    u_new = u.copy()
+    for i in range(1, Nx-1):
+        u_new[i] = u[i] + s * (u[i+1] - 2*u[i] + u[i-1])
+    # Boundary conditions remain zero
+    u_new[0] = u_new[-1] = 0
+    u = u_new
+    if n in snapshot_times:
+        snapshots.append(u.copy())
+
+# Plot results
+plt.figure(figsize=(8,5))
+for idx, snap in enumerate(snapshots):
+    plt.plot(x, snap, label=f't={snapshot_times[idx]*dt:.3f}')
+plt.title('1D Heat Equation: Central Pulse, Explicit FTCS')
+plt.xlabel('x')
+plt.ylabel('Temperature (°C)')
+plt.legend(title='Time')
+plt.show()
+
+
+
+# Shooting method function
+
+def shooting_method(guess1, guess2, tol=1e-5, max_iter=15, N=1000):
+    h = L / N  # step size
+    for i in range(max_iter):
+     # first integration with slope guess1
+        xs1, sol1 = rk4_system(heat_eq, 0, np.array([T0, guess1]), h, L)
+        TL1 = sol1[-1, 0]  # temperature at x=L for first guess
+
+# second integration with slope guess2
+        xs2, sol2 = rk4_system(heat_eq, 0, np.array([T0, guess2]), h, L)
+        TL2 = sol2[-1, 0]
+
+         # update slope using secant method
+        new_guess = guess2 + (TL - TL2) * (guess2 - guess1) / (TL2 - TL1)
+
+        # print progress (optional)
+        # print(f"Iter {i+1}: slope = {new_guess:.4f}, TL = {TL2:.2f}")
+
+        if abs(TL2 - TL) < tol:
+            return xs2, sol2  # done when close enough
+
+        # shift guesses for next iteration
+        guess1, guess2 = guess2, new_guess
+
+    return xs2, sol2  # return last solution if not converged
+#given constants
+L = 10.0  # rod length (m)
+alpha = 0.01  # heat transfer coefficient (1/m^2)
+Ta = 20.0  # ambient temperature (°C)
+T0 = 40.0  # temperature at x=0 (°C)
+TL = 200.0  # temperature at x=L (°C)
+
+
+# define the system of ODEs
+# y1 = T, y2 = dT/dx
+# dy1/dx = y2
+# dy2/dx = -alpha * (Ta - y1)
+
+
+
+
+
+# initial slope guesses
+
+guess1 = 0.0
+guess2 = 40.0
+
+def heat_eq(x, state):
+    T, dTdx = state
+    dT = dTdx
+    d2T = -alpha * (Ta - T)
+    return np.array([dT, d2T])
