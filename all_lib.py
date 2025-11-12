@@ -840,3 +840,46 @@ def heat_eq(x, state):
     dT = dTdx
     d2T = -alpha * (Ta - T)
     return np.array([dT, d2T])
+
+
+
+
+# Function to find interpolated value using lagrange formula
+def lagrange_interpoltion(x_vals, y_vals, x):
+    total = 0
+    n = len(x_vals)
+    for i in range(n):
+        term = y_vals[i]
+        for j in range(n):
+            if i != j:
+    # multiply by all terms (x - xj)/(xi - xj)
+                term *= (x - x_vals[j]) / (x_vals[i] - x_vals[j])
+    # add up each term to total
+        total += term
+        # return final estimated value
+    return total
+
+
+#  linear regression
+def linear_regresion(x, y):
+# calculate slope and intercept using basic formula
+    n = len(x)
+    sum_x = np.sum(x)
+    sum_y = np.sum(y)
+    sum_x2 = np.sum(x**2)
+    sum_xy = np.sum(x * y)
+    slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x**2)
+    intercept = (sum_y - slope * sum_x) / n
+    return slope, intercept
+
+
+# Calculating Pearson’s r square value
+def r_squared(x, y, slope, intercept):
+  # predicted y from the regression line
+    y_pred = slope * x + intercept
+
+    ss_res = np.sum((y - y_pred)**2)
+
+    ss_tot = np.sum((y - np.mean(y))**2)
+    # return coefficient of determination
+    return 1 - (ss_res / ss_tot)
