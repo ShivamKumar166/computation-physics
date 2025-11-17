@@ -3,9 +3,8 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 
-# ================================================================
-#                      SVD HELPER FUNCTIONS
-# ================================================================
+
+
 # an approximate SVD based on power iterations.
 
 def transpose(A):
@@ -323,3 +322,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
