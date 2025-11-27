@@ -279,7 +279,10 @@ plt.show()
 
 #Answers
 
-'''Q2 — Gauss–Seidel Results:
+'''
+Q.1 From the graph we can see that at eq. both sides will have approx. 2500 particles
+
+Q2 — Gauss–Seidel Results:
 x1 = 0.99999975
 x2 = 0.99999979
 x3 = 0.99999991
@@ -307,3 +310,4 @@ a1 = -1.1937592138092312
 a2 = -0.4572554123829478
 a3 = -0.8025653910658175
 a4 = 0.013239427477391276'''
+
